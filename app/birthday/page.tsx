@@ -15,6 +15,8 @@ import { ChapterNav } from '@/components/chapter-nav'
 import { ScrollProgressBar } from '@/components/progress-bar'
 import { CustomCursor } from '@/components/custom-cursor'
 import { SealedDoor } from '@/components/sealed-door'
+import { Section } from '@/components/section'
+import { PhotoGallery } from '@/components/photo-gallery'
 
 import birthdayData from '@/data/birthday.json'
 import ellaData from '@/data/ella.json'
@@ -52,6 +54,11 @@ export default function BirthdayExperience() {
 
       {/* Chapter 2: Who She Is */}
       <TraitsGrid traits={birthdayData.traits || traits.slice(0, 20)} />
+
+      {/* Chapter 2.5: Funny Moments */}
+      <Section eyebrow="Funny moments" title="Funny moments">
+        <PhotoGallery photos={galleryData.funnyMoments || []} />
+      </Section>
 
       {/* Chapter 3: The Gallery */}
       <BirthdayGallery sections={galleryData.birthdaySections} />
