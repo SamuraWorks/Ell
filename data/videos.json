@@ -1,19 +1,31 @@
 {
   "birthday": [
-    { "title": "Soft morning with you", "src": "" },
-    { "title": "Golden hour when you laughed", "src": "" },
-    { "title": "Quiet evening that felt like home", "src": "" }
+    {
+      "title": "Soft morning with you",
+      "src": ""
+    },
+    {
+      "title": "Golden hour when you laughed",
+      "src": ""
+    },
+    {
+      "title": "Quiet evening that felt like home",
+      "src": ""
+    }
   ],
   "anniversary": [
-    { "title": "Our first year", "src": "" },
-    { "title": "Still here together", "src": "" },
-    { "title": "A quiet moment", "src": "" }
+    {
+      "title": "Our first year",
+      "src": ""
+    },
+    {
+      "title": "Still here together",
+      "src": ""
+    },
+    {
+      "title": "A quiet moment",
+      "src": ""
+    }
   ],
-  "funnyMoments": [
-    { "title": "Funny Moment: IMG-20251008-WA0047", "src": "/gallery/IMG-20251008-WA0047.jpg" },
-    { "title": "Funny Moment: IMG-20260604-WA0026", "src": "/gallery/IMG-20260604-WA0026.jpg" },
-    { "title": "Funny Moment: IMG_20251215_132631_345", "src": "/gallery/IMG_20251215_132631_345.jpg" },
-    { "title": "Funny Moment: Screenshot_20240803-174642", "src": "/gallery/Screenshot_20240803-174642.png" },
-    { "title": "Funny Moment: Snapchat-2038499559", "src": "/gallery/Snapchat-2038499559.jpg" }
-  ]
+  "funnyMoments": []
 }
