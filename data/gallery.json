@@ -1340,7 +1340,50 @@
       "caption": "A quiet, personal image from our years together."
     }
   ],
-  "funnyMoments": [],
+  "funnyMoments": [
+    {
+      "id": 75,
+      "src": "/gallery/1.jpg",
+      "caption": "Funny moment 1",
+      "section": "Funny Moments",
+      "order": 1
+    },
+    {
+      "id": 76,
+      "src": "/gallery/1.png",
+      "caption": "Funny moment 1 (alternate)",
+      "section": "Funny Moments",
+      "order": 2
+    },
+    {
+      "id": 77,
+      "src": "/gallery/1-2.jpg",
+      "caption": "Funny moment 2",
+      "section": "Funny Moments",
+      "order": 3
+    },
+    {
+      "id": 78,
+      "src": "/gallery/1-3.jpg",
+      "caption": "Funny moment 3",
+      "section": "Funny Moments",
+      "order": 4
+    },
+    {
+      "id": 79,
+      "src": "/gallery/1-4.jpg",
+      "caption": "Funny moment 4",
+      "section": "Funny Moments",
+      "order": 5
+    },
+    {
+      "id": 80,
+      "src": "/gallery/1-5.jpg",
+      "caption": "Funny moment 5",
+      "section": "Funny Moments",
+      "order": 6
+    }
+  ],
   "birthdaySections": [
     {
       "title": "When She Was Little",
