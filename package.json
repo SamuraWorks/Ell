@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "validate-gallery": "node ./scripts/validate-gallery-assets.js",
+    "prebuild": "npm run validate-gallery"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
