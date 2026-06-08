@@ -1,0 +1,86 @@
+{
+  "intro": "This is for you, Ella.",
+  "traits": [
+    "Calm",
+    "Shy",
+    "Caring",
+    "Family-oriented",
+    "Emotionally strong",
+    "Loyal",
+    "Thoughtful",
+    "Respectful",
+    "Patient",
+    "Gentle",
+    "Honest",
+    "Kind",
+    "Grounded",
+    "Warm",
+    "Understanding",
+    "Genuine",
+    "Soft-hearted",
+    "Resilient",
+    "Devoted",
+    "Quietly brave"
+  ],
+  "timeline": [
+    {
+      "title": "How we met",
+      "text": "A quiet beginning that slowly turned into something steady."
+    },
+    {
+      "title": "First connection",
+      "text": "The first time talking felt easy, like it already made sense."
+    },
+    {
+      "title": "Growing closer",
+      "text": "Small moments became the ones that mattered most."
+    },
+    {
+      "title": "A memory we keep",
+      "text": "A day that still feels warm whenever we think about it."
+    },
+    {
+      "title": "Where we are now",
+      "text": "Comfortable, honest, and still choosing each other."
+    }
+  ],
+  "language": [
+    { "name": "Fay-Fay", "meaning": "Her nickname." },
+    { "name": "Chargie", "meaning": "Our relationship bond name." },
+    { "name": "Chicken 🍗", "meaning": "A playful comfort joke between us." },
+    { "name": "Mi amor", "meaning": "Love." },
+    { "name": "Tesoro", "meaning": "Treasure." },
+    { "name": "Corazón", "meaning": "Heart." }
+  ],
+  "videos": [
+    { "title": "A little moment", "src": "" },
+    { "title": "Something we shared", "src": "" },
+    { "title": "Just us", "src": "" }
+  ],
+  "letter": "Ella, turning 20 is a quiet milestone, and you carry it the way you carry everything else, with calm and grace. I appreciate the person you are, the patience you have, and the care you give without asking for anything back. Thank you for being steady, honest, and kind. Here's to you, exactly as you are.",
+  "prayers": [
+    "I pray for both of you, that the next steps bring clarity and peace in the middle of uncertainty.",
+    "I pray for Samuel's strength and wisdom as he redirects his energy toward growth, faith, and purpose.",
+    "I pray Ella finds safety, understanding, and the grace to choose what is best for her heart and future."
+  ],
+  "wishes": [
+    "I wish for courage to care well while also protecting your own emotional peace.",
+    "I wish for more gentle certainty, quiet confidence, and healing in the days ahead.",
+    "I wish the years to come bring rest, renewed focus, and the kind of love that feels steady and true."
+  ],
+  "music": {
+    "buttonText": "Play our soundtrack",
+    "description": "If you add a file named background-music.mp3 to public/, this will play a quiet background track for the story.",
+    "audioSrc": "/background-music.mp3"
+  },
+  "future": {
+    "title": "Ella @ 20s",
+    "statements": [
+      "This decade is yours to grow into, slowly and on your own terms.",
+      "Keep choosing what feels true, even when it's quiet.",
+      "Your calm is a strength, not something to apologize for.",
+      "There is so much ahead, and you're ready for more of it than you think."
+    ]
+  },
+  "teaser": "Next chapter unlocks June 24"
+}

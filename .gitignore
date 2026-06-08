@@ -1,0 +1,7 @@
+ .venv/
+node_modules/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+dist/
+.DS_Store

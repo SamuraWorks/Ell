@@ -1,0 +1,107 @@
+{
+  "birthdayDate": "2026-06-20",
+  "hero": {
+    "title": "Happy Birthday, my love 💖",
+    "subtitle": "This is for you, Ella.",
+    "cta": "Open your surprise 🎁"
+  },
+  "emotionalAnchor": "This page is not a gift… it is the quiet memory of all the soft moments we share.",
+  "letter": {
+    "opening": "My Fay Fay 💖, my chargie, my moama…",
+    "paragraphs": [
+      "On this June 20, every beat in my chest feels like a celebration because the world became brighter the day you were born.",
+      "Your birthday is not just another date. It is the story of the woman who brings warmth, light, and grace into every room she enters.",
+      "I love the way your laughter sounds like music, the way your kindness turns ordinary moments into memories, and the way your eyes shine with a quiet courage that takes my breath away.",
+      "You make even the smallest moments feel extraordinary: a morning text, a shared smile, a gentle hand held without thinking. Those are the pieces of us I treasure most.",
+      "At twenty, you are already more beautiful, more strong, and more alive than words can hold. Today is for celebrating every part of you — your heart, your soul, your dreams, and the love you give so freely.",
+      "I am proud of who you are, endlessly grateful for the way you love, and excited for all the chapters ahead. This year belongs to you, and I want it to feel as special as you make my life feel.",
+      "I promise to keep celebrating you, to keep lifting you, and to keep loving you with a tenderness that honors how incredible you really are.",
+      "Happy birthday, my Fay Fay. Today the whole world feels a little more magical because it is yours."
+    ],
+    "prayers": [
+      "I pray that God continues to surround you with peace that feels like a warm hand on your shoulder, even when the world is noisy.",
+      "I pray your heart remains tender to the good gifts and able to recognize wisdom in quiet moments.",
+      "I pray you are guided toward a life that honors your soul and brings you closer to the meaning you were made for."
+    ],
+    "careerGoals": [
+      "To finish civil engineering at Fourah Bay College with the same quiet strength and focus you bring to every challenge.",
+      "To build a future in engineering where you design strong, beautiful spaces that protect and uplift the people who use them.",
+      "To carry your faith, your care, and your practical brilliance into a career that leaves a real mark on the world."
+    ],
+    "wishes": [
+      "I wish you mornings that feel soft and full of possibility, with a heart that knows you are enough.",
+      "I wish you the courage to choose the beautiful truth over the loudest path.",
+      "I wish this year gives you quiet victories, gentle healing, and laughter that comes from a place of freedom."
+    ]
+  },
+  "timeline": [
+    {
+      "event": "How we met",
+      "icon": "✨",
+      "description": "A quiet beginning that turned into something steady and warm."
+    },
+    {
+      "event": "First connection",
+      "icon": "✨",
+      "description": "The first conversation felt easy, like it already made sense."
+    },
+    {
+      "event": "Growing closer",
+      "icon": "💞",
+      "description": "Small moments became the ones I wanted to keep forever."
+    },
+    {
+      "event": "A memory we keep",
+      "icon": "🕊️",
+      "description": "A day that still feels warm whenever we think about it."
+    },
+    {
+      "event": "Where we are now",
+      "icon": "🌹",
+      "description": "Comfortable, honest, and still choosing each other each day."
+    }
+  ],
+  "traits": [
+    { "name": "Caring", "description": "You notice when something's wrong before anyone says a word." },
+    { "name": "Resilient", "description": "You've been through things that would break most people. You didn't break." },
+    { "name": "Funny", "description": "Not trying-to-be-funny. Actually funny. Effortlessly." },
+    { "name": "Thoughtful", "description": "You remember the details that matter." },
+    { "name": "Loyal", "description": "When you're in someone's corner, you're all in." },
+    { "name": "Quietly Strong", "description": "You don't announce your strength. You just carry things." },
+    { "name": "Curious", "description": "You ask questions about the world that most people walk past." },
+    { "name": "Gentle", "description": "There's a softness in how you move through the world." },
+    { "name": "Determined", "description": "When you've made up your mind, nothing moves you." },
+    { "name": "Expressive", "description": "Your face tells the whole story before you say a thing." },
+    { "name": "Nostalgic", "description": "You hold onto the beautiful things. You don't let them fade." },
+    { "name": "Creative", "description": "You see things differently. Always have." },
+    { "name": "Emotional Intelligence", "description": "You understand people deeply — sometimes better than they understand themselves." },
+    { "name": "Infectious Energy", "description": "Rooms feel different when you're in them." },
+    { "name": "Perceptive", "description": "Nothing gets past you. Nothing." },
+    { "name": "Stubborn", "description": "You know what you believe. You don't let people talk you out of your truth." },
+    { "name": "Beautiful", "description": "Not just the obvious kind. The kind that comes from the inside and leaks out." },
+    { "name": "Patient", "description": "With others. Less so with yourself — work on that." },
+    { "name": "Brave", "description": "You try things. You move toward what scares you." },
+    { "name": "20 at 20", "description": "You are twenty years of becoming. And you're only getting started." }
+  ],
+  "nicknames": [
+    { "name": "Fay-Fay", "emoji": "🌸", "meaning": "Her nickname." },
+    { "name": "Chargie", "emoji": "⚡", "meaning": "Our relationship bond name." },
+    { "name": "Chicken", "emoji": "🍗", "meaning": "A playful comfort joke between us." },
+    { "name": "Mi Amor", "emoji": "💛", "meaning": "Spanish. It just fits." },
+    { "name": "Tesoro", "emoji": "✨", "meaning": "Italian for treasure. Because that's what you are." },
+    { "name": "Corazón", "emoji": "🫀", "meaning": "My heart. In the most literal sense." }
+  ],
+  "aspirations": {
+    "dreams": [
+      "To find a career where your empathy is a superpower, not a burden.",
+      "To travel and collect quiet mornings in cities you've never been to.",
+      "To build a life that feels as safe and warm as you make others feel."
+    ],
+    "promises": [
+      "I will always be in your corner, even when you doubt yourself.",
+      "I will listen when you need quiet, and speak up when you need a voice.",
+      "I will keep choosing you, every single day."
+    ],
+    "reminder": "The world has not yet seen what you are capable of. Neither have you. But you will."
+  }
+}
