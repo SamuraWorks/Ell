@@ -77,7 +77,7 @@ The one who is still falling for you every day.`
           The Time Capsule
         </h3>
         <p className="font-jost text-[14px] text-[#E8D5A3] mb-8 uppercase tracking-[0.1em]">
-          Locked until June 4, 2036
+          Locked until June 20, 2036
         </p>
 
         {!isSaved ? (

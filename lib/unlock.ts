@@ -1,5 +1,5 @@
 // Client-side unlock logic. No backend.
-// June 4 -> birthday experience (/birthday)
+// June 20 -> birthday experience (/birthday)
 // June 24 -> anniversary page (/anniversary)
 //
 // DEV_MODE: when true, ALL routes are open regardless of date.
@@ -9,14 +9,14 @@ export const DEV_MODE = true
 const YEAR = new Date().getFullYear()
 
 // Month is 0-indexed: 5 = June
-export const BIRTHDAY_UNLOCK = new Date(YEAR, 5, 4, 0, 0, 0)
+export const BIRTHDAY_UNLOCK = new Date(YEAR, 5, 20, 0, 0, 0)
 export const ANNIVERSARY_UNLOCK = new Date(YEAR, 5, 24, 0, 0, 0)
 
 export function getBirthdayTarget(now: Date = new Date()): Date {
-  // Countdown always targets the next upcoming June 4.
-  const target = new Date(now.getFullYear(), 5, 4, 0, 0, 0)
+  // Countdown always targets the next upcoming June 20.
+  const target = new Date(now.getFullYear(), 5, 20, 0, 0, 0)
   if (now.getTime() >= target.getTime()) {
-    return new Date(now.getFullYear() + 1, 5, 4, 0, 0, 0)
+    return new Date(now.getFullYear() + 1, 5, 20, 0, 0, 0)
   }
   return target
 }
@@ -32,7 +32,7 @@ export function getAnniversaryTarget(now: Date = new Date()): Date {
 
 export function isBirthdayUnlocked(now: Date = new Date()): boolean {
   if (DEV_MODE) return true
-  return now.getMonth() > 5 || (now.getMonth() === 5 && now.getDate() >= 4)
+  return now.getMonth() > 5 || (now.getMonth() === 5 && now.getDate() >= 20)
 }
 
 export function isAnniversaryUnlocked(now: Date = new Date()): boolean {

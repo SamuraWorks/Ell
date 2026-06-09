@@ -94,8 +94,8 @@ export function EnvelopeLetter({
               <div className="absolute top-1/3 left-0 w-full h-[1px] bg-[#E8D5A3]/30" />
               <div className="absolute top-2/3 left-0 w-full h-[1px] bg-[#E8D5A3]/30" />
 
-              <div className="text-center mb-8">
-                <span className="font-playfair text-[#D4AF37] text-sm tracking-[0.2em] uppercase">June 4, 2026</span>
+              <div className="flex flex-col items-center gap-1 opacity-60">
+                <span className="font-playfair text-[#D4AF37] text-sm tracking-[0.2em] uppercase">June 20, 2026</span>
               </div>
 
               <div className="font-dancing text-[22px] sm:text-[26px] text-[#3D2C2C] leading-[2.0]">
