@@ -10,6 +10,8 @@ import { AnniversaryGallery } from '@/components/anniversary-gallery'
 import anniversaryData from '@/data/anniversary.json'
 import galleryData from '@/data/gallery.json'
 import { isAnniversaryUnlocked } from '@/lib/unlock'
+import { validateSections } from '@/lib/content-schema'
+import type { ContentSection } from '@/lib/content-schema'
 import { useRouter } from 'next/navigation'
 
 export default function AnniversaryExperience() {
@@ -25,6 +27,16 @@ export default function AnniversaryExperience() {
   }, [router])
 
   if (!mounted || !isAnniversaryUnlocked()) return null
+
+  /**
+   * Anniversary gallery sections — each section exclusively owns its items.
+   * The old shared flat `galleryData.anniversary` array is NOT used here.
+   * `validateSections` deduplicates titles, replaces missing srcs with a
+   * placeholder, and logs every problem to the console.
+   */
+  const anniversarySections = validateSections(
+    (galleryData.anniversarySections as ContentSection[])
+  )
 
   return (
     <main className="relative min-h-screen w-full bg-background selection:bg-[#D4AF37]/20">
@@ -142,7 +154,7 @@ export default function AnniversaryExperience() {
       </section>
 
       {/* Chapter B: The Anniversary Gallery */}
-      <AnniversaryGallery sections={galleryData.anniversarySections} />
+      <AnniversaryGallery sections={anniversarySections} />
 
       {/* Chapter C: What We Learned */}
       <section className="bg-[#F9E8E8] px-6 py-32">

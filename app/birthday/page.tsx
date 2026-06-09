@@ -15,14 +15,14 @@ import { ChapterNav } from '@/components/chapter-nav'
 import { ScrollProgressBar } from '@/components/progress-bar'
 import { CustomCursor } from '@/components/custom-cursor'
 import { SealedDoor } from '@/components/sealed-door'
-import { Section } from '@/components/section'
-import { PhotoGallery } from '@/components/photo-gallery'
 
 import birthdayData from '@/data/birthday.json'
 import ellaData from '@/data/ella.json'
 import galleryData from '@/data/gallery.json'
 import messagesData from '@/data/messages.json'
 import { isAnniversaryUnlocked } from '@/lib/unlock'
+import { validateSections } from '@/lib/content-schema'
+import type { ContentSection } from '@/lib/content-schema'
 import { useRouter } from 'next/navigation'
 
 export default function BirthdayExperience() {
@@ -39,9 +39,24 @@ export default function BirthdayExperience() {
   if (!mounted) return null
 
   // Process traits from ellaData into the format needed by TraitsGrid
-  // (Assuming data/ella.json has been updated with objects or we map strings if not yet)
-  const traits = ellaData.traits.map(t => typeof t === 'string' ? { name: t, description: 'You carry this with quiet grace.' } : t)
+  const traits = ellaData.traits.map(t =>
+    typeof t === 'string' ? { name: t, description: 'You carry this with quiet grace.' } : t
+  )
   const heroPhotoUrl = '/gallery/hero.jpg'
+
+  /**
+   * Birthday gallery sections — each section explicitly owns its own items array.
+   * The separate `galleryData.funnyMoments` flat array is intentionally NOT used here;
+   * the "Funny Moments" section in birthdaySections owns its assets directly.
+   *
+   * `validateSections` will:
+   *  - Deduplicate section titles (guards against "Funny Moments" appearing twice)
+   *  - Replace any missing/empty src with a placeholder and log it to the console
+   *  - Warn on asset-count mismatches
+   */
+  const birthdaySections = validateSections(
+    (galleryData.birthdaySections as ContentSection[])
+  )
 
   return (
     <main className="relative min-h-screen w-full bg-background selection:bg-[#C4687A]/20">
@@ -55,13 +70,11 @@ export default function BirthdayExperience() {
       {/* Chapter 2: Who She Is */}
       <TraitsGrid traits={birthdayData.traits || traits.slice(0, 20)} />
 
-      {/* Chapter 2.5: Funny Moments */}
-      <Section eyebrow="Funny moments" title="Funny moments">
-        <PhotoGallery photos={galleryData.funnyMoments || []} />
-      </Section>
-
-      {/* Chapter 3: The Gallery */}
-      <BirthdayGallery sections={galleryData.birthdaySections} />
+      {/* Chapter 3: The Gallery
+          NOTE: "Funny Moments" is section #7 inside birthdaySections — rendered once here.
+          The old standalone <Section eyebrow="Funny moments"> has been removed to prevent
+          the section appearing twice. */}
+      <BirthdayGallery sections={birthdaySections} />
 
       {/* Chapter 4: Our Story (Timeline) */}
       <div id="chapter-story" className="bg-[#F9E8E8] py-24">
@@ -98,7 +111,7 @@ export default function BirthdayExperience() {
       </section>
 
       {/* Chapter 7: The Birthday Letter */}
-      <EnvelopeLetter 
+      <EnvelopeLetter
         opening={birthdayData.letter.opening}
         paragraphs={birthdayData.letter.paragraphs}
         prayers={birthdayData.letter.prayers}
@@ -109,7 +122,7 @@ export default function BirthdayExperience() {
       />
 
       {/* Chapter 8: Her Next Chapter */}
-      <AspirationPanels 
+      <AspirationPanels
         dreams={birthdayData.aspirations?.dreams || ["Keep choosing what feels true.", "Your calm is a strength."]}
         promises={birthdayData.aspirations?.promises || ["I will always be in your corner.", "I will listen when you need quiet."]}
         reminder={birthdayData.aspirations?.reminder || "The world has not yet seen what you are capable of."}
