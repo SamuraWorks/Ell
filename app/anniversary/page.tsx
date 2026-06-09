@@ -7,6 +7,7 @@ import { CustomCursor } from '@/components/custom-cursor'
 import { ScrollProgressBar } from '@/components/progress-bar'
 import { AnniversaryGallery } from '@/components/anniversary-gallery'
 
+import { AnniversaryLock } from '@/components/anniversary-lock'
 import anniversaryData from '@/data/anniversary.json'
 import galleryData from '@/data/gallery.json'
 import { isAnniversaryUnlocked } from '@/lib/unlock'
@@ -17,16 +18,33 @@ import { useRouter } from 'next/navigation'
 export default function AnniversaryExperience() {
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
+  const [isLocked, setIsLocked] = useState(true)
 
   useEffect(() => {
     setMounted(true)
-    if (!isAnniversaryUnlocked()) {
-      router.push('/')
-    }
     window.scrollTo(0, 0)
-  }, [router])
 
-  if (!mounted || !isAnniversaryUnlocked()) return null
+    const checkLockStatus = () => {
+      const now = new Date()
+      const year = now.getFullYear()
+      const unlockDate = new Date(year, 5, 24, 0, 0, 0) // June 24, 12:00 AM (Month 5 is June)
+      if (now.getTime() >= unlockDate.getTime()) {
+        setIsLocked(false)
+      } else {
+        setIsLocked(true)
+      }
+    }
+
+    checkLockStatus()
+    const interval = setInterval(checkLockStatus, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  if (!mounted) return null
+
+  if (isLocked) {
+    return <AnniversaryLock onUnlock={() => setIsLocked(false)} />
+  }
 
   /**
    * Anniversary gallery sections — each section exclusively owns its items.

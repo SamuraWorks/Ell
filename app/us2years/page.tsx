@@ -7,27 +7,35 @@ import { FadeIn } from '@/components/fade-in'
 import { Section } from '@/components/section'
 import { PhotoGallery } from '@/components/photo-gallery'
 import { LoveBubbleBackground } from '@/components/love-bubble-background'
+import { AnniversaryLock } from '@/components/anniversary-lock'
 import us from '@/data/us.json'
 import gallery from '@/data/gallery.json'
 
 export default function Us2YearsPage() {
-  const [state, setState] = useState<'loading' | 'locked' | 'open'>('loading')
+  const [mounted, setMounted] = useState(false)
+  const [isLocked, setIsLocked] = useState(true)
 
   useEffect(() => {
-    setState(isAnniversaryUnlocked() ? 'open' : 'locked')
+    setMounted(true)
+    const checkLockStatus = () => {
+      const now = new Date()
+      const year = now.getFullYear()
+      const unlockDate = new Date(year, 5, 24, 0, 0, 0) // June 24, 12:00 AM (Month 5 is June)
+      if (now.getTime() >= unlockDate.getTime()) {
+        setIsLocked(false)
+      } else {
+        setIsLocked(true)
+      }
+    }
+    checkLockStatus()
+    const interval = setInterval(checkLockStatus, 1000)
+    return () => clearInterval(interval)
   }, [])
 
-  if (state === 'loading') {
-    return <div className="min-h-screen bg-background" aria-hidden="true" />
-  }
+  if (!mounted) return null
 
-  if (state === 'locked') {
-    return (
-      <LockedScreen
-        title="Us, two years"
-        unlockLabel="This chapter unlocks on June 24."
-      />
-    )
+  if (isLocked) {
+    return <AnniversaryLock onUnlock={() => setIsLocked(false)} />
   }
 
   return (
