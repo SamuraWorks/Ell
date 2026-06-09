@@ -1578,6 +1578,13 @@
       "closingNote": "A look at how she moves through the present with grace and strength.",
       "items": [
         {
+          "id": 2000,
+          "src": "/gallery/grownup-first.jpg",
+          "caption": "Looking radiant and confident.",
+          "section": "All Grown Up",
+          "order": 0
+        },
+        {
           "id": 2001,
           "src": "/gallery/IMG-20260104-WA0013.jpg",
           "caption": "A grown-up moment that feels bright and true.",
