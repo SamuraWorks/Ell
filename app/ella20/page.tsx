@@ -57,12 +57,16 @@ export default function Ella20Page() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center max-w-4xl mx-auto">
           <FadeIn>
             <div className="relative aspect-square w-full overflow-hidden rounded-3xl border border-gold-soft/30 shadow-xl bg-card">
+              <div 
+                className="absolute inset-0 bg-cover bg-center blur-lg scale-110 opacity-30 pointer-events-none" 
+                style={{ backgroundImage: `url('/gallery/IMG-20250205-WA0029.jpg')` }}
+              />
               <Image
                 src="/gallery/IMG-20250205-WA0029.jpg"
                 alt="Our first matching WhatsApp profile picture — the bird"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
+                className="object-contain z-10"
                 priority
               />
             </div>

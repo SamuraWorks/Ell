@@ -39,12 +39,18 @@ function GalleryCard({ photo, showCaption = true, onClick }: { photo: GalleryIte
     >
       <div className="relative w-full aspect-[4/5] sm:aspect-[3/4]">
         {photo.type === 'video' || (typeof photo.src === 'string' && photo.src.toLowerCase().endsWith('.mp4')) ? (
-          <video src={photo.src} preload="metadata" controls playsInline className="h-full w-full object-cover">
+          <video src={photo.src} preload="metadata" controls playsInline className="h-full w-full object-contain bg-black">
             <source src={photo.src} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         ) : (
-          <Image src={photo.src} alt={photo.caption || 'Memory'} fill className="object-cover transition-transform duration-700 hover:scale-105" sizes="(max-width: 640px) 100vw, 50vw" />
+          <div className="relative w-full h-full bg-neutral-900/5">
+            <div 
+              className="absolute inset-0 bg-cover bg-center blur-lg scale-110 opacity-30 pointer-events-none" 
+              style={{ backgroundImage: `url(${photo.src})` }}
+            />
+            <Image src={photo.src} alt={photo.caption || 'Memory'} fill className="object-contain transition-transform duration-700 hover:scale-105 z-10" sizes="(max-width: 640px) 100vw, 50vw" />
+          </div>
         )}
       </div>
       {showCaption && photo.caption ? (
@@ -70,12 +76,18 @@ function SpotlightPhoto({ photo, onClick }: { photo: GalleryItem; onClick?: () =
     >
       <div className="relative w-full aspect-[4/5]">
         {photo.type === 'video' || (typeof photo.src === 'string' && photo.src.toLowerCase().endsWith('.mp4')) ? (
-          <video src={photo.src} preload="metadata" controls playsInline className="h-full w-full object-cover">
+          <video src={photo.src} preload="metadata" controls playsInline className="h-full w-full object-contain bg-black">
             <source src={photo.src} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         ) : (
-          <Image src={photo.src} alt={photo.caption || 'Us together'} fill className="object-cover" />
+          <div className="relative w-full h-full bg-neutral-900/5">
+            <div 
+              className="absolute inset-0 bg-cover bg-center blur-lg scale-110 opacity-30 pointer-events-none" 
+              style={{ backgroundImage: `url(${photo.src})` }}
+            />
+            <Image src={photo.src} alt={photo.caption || 'Us together'} fill className="object-contain z-10" />
+          </div>
         )}
       </div>
       <div className="bg-[#FFF6ED] px-6 py-6 text-center">
@@ -174,12 +186,18 @@ function renderAnniversarySection(section: AnniversarySection | Record<string, a
           <div key={photo.id} className="rounded-[28px] border border-[#E8D5C9] bg-white p-6 shadow-[0_14px_40px_rgba(196,104,122,0.08)]">
             <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[24px]">
               {photo.type === 'video' || (typeof photo.src === 'string' && photo.src.toLowerCase().endsWith('.mp4')) ? (
-                <video src={photo.src} preload="metadata" controls playsInline className="h-full w-full object-cover">
+                <video src={photo.src} preload="metadata" controls playsInline className="h-full w-full object-contain bg-black">
                   <source src={photo.src} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               ) : (
-                <Image src={photo.src} alt={photo.caption} fill className="object-cover" />
+                <div className="relative w-full h-full bg-neutral-900/5">
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center blur-lg scale-110 opacity-30 pointer-events-none" 
+                    style={{ backgroundImage: `url(${photo.src})` }}
+                  />
+                  <Image src={photo.src} alt={photo.caption} fill className="object-contain z-10" />
+                </div>
               )}
             </div>
             <div className="mt-6 text-[#3D2C2C]">

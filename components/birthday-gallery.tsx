@@ -48,12 +48,16 @@ function GalleryPhotoCard({
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
     >
-      <div className="relative w-full overflow-hidden aspect-[4/5] sm:aspect-[3/4]">
+      <div className="relative w-full overflow-hidden aspect-[4/5] sm:aspect-[3/4] bg-neutral-900/5">
+        <div 
+          className="absolute inset-0 bg-cover bg-center blur-lg scale-110 opacity-30 pointer-events-none" 
+          style={{ backgroundImage: `url(${photo.src})` }}
+        />
         <Image
           src={photo.src}
           alt={photo.caption || 'Memory'}
           fill
-          className="object-cover transition-transform duration-700 hover:scale-105"
+          className="object-contain transition-transform duration-700 hover:scale-105 z-10"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           loading="lazy"
         />
@@ -93,7 +97,7 @@ function GalleryVideoCard({ photo, onClick }: { photo: GalleryItem; onClick?: ()
           preload="metadata"
           controls
           playsInline
-          className="h-full w-full object-cover"
+          className="h-full w-full object-contain"
           poster={photo.poster}
         >
           Your browser does not support the video tag.
@@ -182,14 +186,20 @@ function renderSection(section: BirthdaySection | Record<string, any>, onPhotoCl
       <div className="space-y-8">
         <div className="rounded-[28px] border border-[#C9A84C]/20 bg-[#F5E6C8] p-4">
           <div className="relative overflow-hidden rounded-[20px] border border-[rgba(201,168,76,0.5)]">
-            <div className="relative aspect-[16/9] w-full">
+            <div className="relative aspect-[16/9] w-full bg-[#000]">
               {hero.type === 'video' ? (
-                <video src={hero.src} preload="metadata" controls playsInline className="h-full w-full object-cover">
+                <video src={hero.src} preload="metadata" controls playsInline className="h-full w-full object-contain">
                   <source src={hero.src} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               ) : (
-                <Image src={hero.src} alt={hero.caption} fill className="object-cover" sizes="100vw" />
+                <div className="relative w-full h-full bg-neutral-900/5">
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center blur-lg scale-110 opacity-30 pointer-events-none" 
+                    style={{ backgroundImage: `url(${hero.src})` }}
+                  />
+                  <Image src={hero.src} alt={hero.caption} fill className="object-contain z-10" sizes="100vw" />
+                </div>
               )}
             </div>
             <div className="p-6 bg-gradient-to-t from-[#000000]/30 to-transparent">
@@ -208,14 +218,20 @@ function renderSection(section: BirthdaySection | Record<string, any>, onPhotoCl
         {uniqueItems.map((photo, index) => (
           <div key={photo.id} className={`grid gap-6 items-center ${index % 2 === 0 ? 'lg:grid-cols-[1.2fr_0.8fr]' : 'lg:grid-cols-[0.8fr_1.2fr]'} `}>
             <div className="rounded-[28px] overflow-hidden border border-[#E7D4C9] bg-white shadow-[0_10px_30px_rgba(196,104,122,0.08)]">
-              <div className="relative aspect-[16/12] w-full">
+              <div className="relative aspect-[16/12] w-full bg-[#000]">
                 {photo.type === 'video' ? (
-                  <video src={photo.src} preload="metadata" controls playsInline className="h-full w-full object-cover">
+                  <video src={photo.src} preload="metadata" controls playsInline className="h-full w-full object-contain">
                     <source src={photo.src} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
                 ) : (
-                  <Image src={photo.src} alt={photo.caption} fill className="object-cover" />
+                  <div className="relative w-full h-full bg-neutral-900/5">
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center blur-lg scale-110 opacity-30 pointer-events-none" 
+                      style={{ backgroundImage: `url(${photo.src})` }}
+                    />
+                    <Image src={photo.src} alt={photo.caption} fill className="object-contain z-10" />
+                  </div>
                 )}
               </div>
             </div>

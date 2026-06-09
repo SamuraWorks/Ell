@@ -66,12 +66,16 @@ export function CinematicIntro({ photoUrl }: CinematicIntroProps) {
           transition={{ delay: line1.length * 0.15 + 5.5, duration: 1.5 }}
           className="mt-16 w-full max-w-3xl flex flex-col items-center"
         >
-          <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_8px_40px_rgba(196,104,122,0.12)]">
+          <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_8px_40px_rgba(196,104,122,0.12)] bg-neutral-900/5">
+            <div 
+              className="absolute inset-0 bg-cover bg-center blur-lg scale-110 opacity-30 pointer-events-none" 
+              style={{ backgroundImage: `url(${photoUrl || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=1200"})` }}
+            />
             <Image
               src={photoUrl || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=1200"} // Placeholder
               alt="Ella"
               fill
-              className="object-cover sepia-[0.08] brightness-[1.05] saturate-[1.1]"
+              className="object-contain sepia-[0.08] brightness-[1.05] saturate-[1.1] z-10"
               priority
             />
           </div>

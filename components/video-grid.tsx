@@ -11,7 +11,7 @@ export function VideoGrid({ videos }: { videos: Video[] }) {
           <figure className="overflow-hidden rounded-2xl border border-gold-soft/30 bg-card shadow-sm">
             <div className="relative aspect-video w-full bg-pink-soft/60">
               {video.src ? (
-                <video controls preload="none" playsInline className="h-full w-full object-cover">
+                <video controls preload="none" playsInline className="h-full w-full object-contain bg-black">
                   <source src={video.src} type="video/mp4" />
                   {'Your browser does not support the video element.'}
                 </video>

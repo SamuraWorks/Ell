@@ -84,9 +84,9 @@ export function MasonryGallery({ groups }: MasonryGalleryProps) {
                       src={photo.src || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=800"} // Placeholder
                       alt={photo.caption || "Memory"}
                       width={600}
-                      height={800} // Assume a vertical default, object-cover handles it
-                      className="w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      // Removed intrinsic height dependency for masonry, setting generic aspect or height might be needed per photo, but Next Image with layout responsive usually handles it if height/width ratio is known. Let's rely on object-cover and reasonable dims.
+                      height={800}
+                      className="w-full h-auto transition-transform duration-700 group-hover:scale-105"
+                      style={{ height: 'auto' }}
                     />
                     
                     {/* Hover Overlay */}
