@@ -1,10 +1,37 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import birthdayData from '@/data/birthday.json'
 
 export default function BirthdayLetterPage() {
+  const router = useRouter()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    const checkLockStatus = () => {
+      const now = new Date()
+      const year = now.getFullYear()
+      const unlockDate = new Date(year, 5, 20, 0, 0, 0) // June 20, 12:00 AM
+      if (now.getTime() < unlockDate.getTime()) {
+        router.push('/birthday')
+      }
+    }
+    checkLockStatus()
+  }, [router])
+
   const letter = birthdayData.letter
+
+  if (!mounted) return null
+
+  const now = new Date()
+  const year = now.getFullYear()
+  const unlockDate = new Date(year, 5, 20, 0, 0, 0)
+  if (now.getTime() < unlockDate.getTime()) {
+    return null
+  }
 
   return (
     <main className="min-h-screen bg-[#FDF8F3] px-6 py-20">

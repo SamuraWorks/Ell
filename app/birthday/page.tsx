@@ -15,6 +15,7 @@ import { ChapterNav } from '@/components/chapter-nav'
 import { ScrollProgressBar } from '@/components/progress-bar'
 import { CustomCursor } from '@/components/custom-cursor'
 import { SealedDoor } from '@/components/sealed-door'
+import { BirthdayLock } from '@/components/birthday-lock'
 
 import birthdayData from '@/data/birthday.json'
 import ellaData from '@/data/ella.json'
@@ -29,14 +30,34 @@ export default function BirthdayExperience() {
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
   const [anniversaryOpen, setAnniversaryOpen] = useState(false)
+  const [isLocked, setIsLocked] = useState(true)
 
   useEffect(() => {
     setMounted(true)
     setAnniversaryOpen(isAnniversaryUnlocked())
     window.scrollTo(0, 0)
+
+    const checkLockStatus = () => {
+      const now = new Date()
+      const year = now.getFullYear()
+      const unlockDate = new Date(year, 5, 20, 0, 0, 0) // June 20, 12:00 AM (Month 5 is June)
+      if (now.getTime() >= unlockDate.getTime()) {
+        setIsLocked(false)
+      } else {
+        setIsLocked(true)
+      }
+    }
+
+    checkLockStatus()
+    const interval = setInterval(checkLockStatus, 1000)
+    return () => clearInterval(interval)
   }, [])
 
   if (!mounted) return null
+
+  if (isLocked) {
+    return <BirthdayLock onUnlock={() => setIsLocked(false)} />
+  }
 
   // Process traits from ellaData into the format needed by TraitsGrid
   const traits = ellaData.traits.map(t =>
