@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { WaxSeal } from '@/components/wax-seal'
+import { getBirthdayTarget, getAnniversaryTarget } from '@/lib/unlock'
 
 interface AccessLockProps {
   type: 'birthday' | 'anniversary'
@@ -23,21 +24,12 @@ export function AccessLock({ type, onUnlock }: AccessLockProps) {
   const [shaking, setShaking] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  // Tracks whether the timer was actively counting down (diff > 0) before reaching zero.
-  // Prevents instant password jump on load when date has already passed.
-  const wasCountingRef = useRef(false)
 
   const isBirthday = type === 'birthday'
 
-  // Target Dates (local time)
-  const getTargetDate = () => {
-    const year = new Date().getFullYear()
-    if (isBirthday) {
-      return new Date(year, 5, 20, 0, 0, 0) // June 20, 12:00 AM
-    } else {
-      return new Date(year, 5, 24, 0, 0, 0) // June 24, 12:00 AM
-    }
-  }
+  // Always targets the NEXT upcoming date — never returns a past date,
+  // so the timer always counts forward and never starts at 0.
+  const getTargetDate = () => isBirthday ? getBirthdayTarget() : getAnniversaryTarget()
 
   useEffect(() => {
     setMounted(true)
@@ -45,15 +37,9 @@ export function AccessLock({ type, onUnlock }: AccessLockProps) {
       const storageKey = isBirthday ? 'birthday_seal_broken' : 'anniversary_seal_broken'
       const saved = localStorage.getItem(storageKey)
       if (saved === 'true') {
-        const target = getTargetDate()
-        const now = new Date()
-        if (now.getTime() >= target.getTime()) {
-          // Date has already passed — go straight to password, skip the countdown
-          setStep('password')
-        } else {
-          // Date hasn't arrived yet — show the countdown
-          setStep('countdown')
-        }
+        // Always restore to countdown — never jump straight to password.
+        // The countdown must complete before the password step is accessible.
+        setStep('countdown')
       }
     }
   }, [isBirthday])
@@ -66,16 +52,10 @@ export function AccessLock({ type, onUnlock }: AccessLockProps) {
       const diff = target.getTime() - now.getTime()
 
       if (diff <= 0) {
-        // Only advance to password if the timer was actively counting down.
-        // This prevents jumping straight to password on initial load when
-        // the date has already passed (that case is handled in the mount effect).
-        if (wasCountingRef.current) {
-          setStep((prev) => (prev === 'countdown' ? 'password' : prev))
-          wasCountingRef.current = false
-        }
         setTime({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+        // Advance from countdown to password when timer actually hits zero
+        setStep((prev) => (prev === 'countdown' ? 'password' : prev))
       } else {
-        wasCountingRef.current = true
         const days = Math.floor(diff / (1000 * 60 * 60 * 24))
         const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
         const minutes = Math.floor((diff / (1000 * 60)) % 60)
@@ -87,7 +67,7 @@ export function AccessLock({ type, onUnlock }: AccessLockProps) {
     updateTimer()
     const interval = setInterval(updateTimer, 1000)
     return () => clearInterval(interval)
-  }, [type, onUnlock])
+  }, [type])
 
   // Focus input when password step is shown
   useEffect(() => {
@@ -101,13 +81,8 @@ export function AccessLock({ type, onUnlock }: AccessLockProps) {
   }
 
   const handleCrackComplete = () => {
-    const now = new Date()
-    const target = getTargetDate()
-    if (now >= target) {
-      setStep('password')
-    } else {
-      setStep('countdown')
-    }
+    // Always go to countdown after seal — never skip to password directly
+    setStep('countdown')
     if (typeof window !== 'undefined') {
       const storageKey = isBirthday ? 'birthday_seal_broken' : 'anniversary_seal_broken'
       localStorage.setItem(storageKey, 'true')

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { WaxSeal } from '@/components/wax-seal'
-import { checkPassword, saveBirthdayPassword, isBirthdayPasswordOk, DEV_MODE } from '@/lib/unlock'
+import { checkPassword, saveBirthdayPassword, isBirthdayPasswordOk, getBirthdayTarget } from '@/lib/unlock'
 
 interface BirthdayLockProps {
   onUnlock: () => void
@@ -11,9 +11,12 @@ interface BirthdayLockProps {
 
 export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
   const [mounted, setMounted] = useState(false)
+  // Strict flow: seal → countdown → password
+  // 'countdown' is always shown after seal-break — no shortcuts to 'password'
   const [step, setStep] = useState<'seal' | 'countdown' | 'password'>('seal')
   const [shouldCrack, setShouldCrack] = useState(false)
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+  const [countdownDone, setCountdownDone] = useState(false)
 
   // Password gate state
   const [pwd, setPwd] = useState('')
@@ -21,57 +24,43 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
   const [shake, setShake] = useState(false)
   const [wrongAttempt, setWrongAttempt] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  // Tracks whether the timer was actively counting down (diff > 0) before reaching zero.
-  // Used to prevent instant password jump on load when date has already passed.
-  const wasCountingRef = useRef(false)
-
-  // Target: June 20, 12:00 AM of the current year
-  const getTargetDate = () => {
-    const year = new Date().getFullYear()
-    return new Date(year, 5, 20, 0, 0, 0) // Month 5 is June (0-indexed)
-  }
 
   useEffect(() => {
     setMounted(true)
-    // If password was already verified this session, skip straight to unlock
+
+    // If password was already verified this session (same tab), skip straight to content.
+    // This avoids re-asking the password on in-session navigation (e.g. back button).
     if (isBirthdayPasswordOk()) {
       onUnlock()
       return
     }
+
+    // If the seal was already broken in a previous visit, restore the countdown step.
+    // We NEVER skip directly to 'password' from localStorage — the countdown must run.
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('birthday_seal_broken')
       if (saved === 'true') {
-        const target = getTargetDate()
-        const now = new Date()
-        if (now.getTime() >= target.getTime()) {
-          // Date has already passed — go straight to password, skip the countdown
-          setStep('password')
-        } else {
-          // Date hasn't arrived yet — show the countdown
-          setStep('countdown')
-        }
+        setStep('countdown')
       }
     }
   }, [onUnlock])
 
   useEffect(() => {
-    const target = getTargetDate()
+    // getBirthdayTarget() always returns the next upcoming June 20, rolling to next
+    // year if this year's date has already passed — so the timer is never instantly 0.
+    const target = getBirthdayTarget()
 
     const updateTimer = () => {
       const now = new Date()
       const diff = target.getTime() - now.getTime()
 
       if (diff <= 0) {
-        // Only advance to password if the timer was actively counting down.
-        // This prevents jumping straight to password on initial load when
-        // the date has already passed (that case is handled in the mount effect).
-        if (wasCountingRef.current) {
-          setStep((current) => (current === 'countdown' ? 'password' : current))
-          wasCountingRef.current = false
-        }
         setTime({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+        setCountdownDone(true)
+        // Advance to password step once the timer actually reaches zero
+        setStep((current) => (current === 'countdown' ? 'password' : current))
       } else {
-        wasCountingRef.current = true
+        setCountdownDone(false)
         const days = Math.floor(diff / (1000 * 60 * 60 * 24))
         const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
         const minutes = Math.floor((diff / (1000 * 60)) % 60)
@@ -94,6 +83,7 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
   const handleBreakSeal = () => setShouldCrack(true)
 
   const handleCrackComplete = () => {
+    // Always go to countdown after seal — never jump to password directly
     setStep('countdown')
     if (typeof window !== 'undefined') {
       localStorage.setItem('birthday_seal_broken', 'true')
@@ -189,7 +179,7 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
             </motion.div>
           )}
 
-          {/* ── Step 2: Countdown ────────────────────────────── */}
+          {/* ── Step 2: Countdown (must complete before password unlocks) ── */}
           {step === 'countdown' && (
             <motion.div
               key="countdown-step"
@@ -233,16 +223,11 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
                 </p>
               </div>
 
-              <button
-                onClick={() => setStep('password')}
-                className="mt-2 font-jost text-xs uppercase tracking-widest text-[#C4687A]/50 hover:text-[#C4687A] transition-colors underline underline-offset-4"
-              >
-                I have the password →
-              </button>
+              {/* No shortcut button — password is only accessible after the timer hits zero */}
             </motion.div>
           )}
 
-          {/* ── Step 3: Password Gate ────────────────────────── */}
+          {/* ── Step 3: Password Gate (only reachable after countdown finishes) ── */}
           {step === 'password' && (
             <motion.div
               key="password-step"
