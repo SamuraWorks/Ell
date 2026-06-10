@@ -21,6 +21,9 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
   const [shake, setShake] = useState(false)
   const [wrongAttempt, setWrongAttempt] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  // Tracks whether the timer was actively counting down (diff > 0) before reaching zero.
+  // Used to prevent instant password jump on load when date has already passed.
+  const wasCountingRef = useRef(false)
 
   // Target: June 20, 12:00 AM of the current year
   const getTargetDate = () => {
@@ -38,7 +41,15 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('birthday_seal_broken')
       if (saved === 'true') {
-        setStep('countdown')
+        const target = getTargetDate()
+        const now = new Date()
+        if (now.getTime() >= target.getTime()) {
+          // Date has already passed — go straight to password, skip the countdown
+          setStep('password')
+        } else {
+          // Date hasn't arrived yet — show the countdown
+          setStep('countdown')
+        }
       }
     }
   }, [onUnlock])
@@ -50,10 +61,17 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
       const now = new Date()
       const diff = target.getTime() - now.getTime()
 
-      if (DEV_MODE || diff <= 0) {
-        // Timer done — only advance to password if already on countdown step
-        setStep((current) => (current === 'countdown' ? 'password' : current))
+      if (diff <= 0) {
+        // Only advance to password if the timer was actively counting down.
+        // This prevents jumping straight to password on initial load when
+        // the date has already passed (that case is handled in the mount effect).
+        if (wasCountingRef.current) {
+          setStep((current) => (current === 'countdown' ? 'password' : current))
+          wasCountingRef.current = false
+        }
+        setTime({ days: 0, hours: 0, minutes: 0, seconds: 0 })
       } else {
+        wasCountingRef.current = true
         const days = Math.floor(diff / (1000 * 60 * 60 * 24))
         const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
         const minutes = Math.floor((diff / (1000 * 60)) % 60)
@@ -214,6 +232,13 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
                   "The wait is part of the gift."
                 </p>
               </div>
+
+              <button
+                onClick={() => setStep('password')}
+                className="mt-2 font-jost text-xs uppercase tracking-widest text-[#C4687A]/50 hover:text-[#C4687A] transition-colors underline underline-offset-4"
+              >
+                I have the password →
+              </button>
             </motion.div>
           )}
 

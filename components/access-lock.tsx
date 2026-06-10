@@ -23,6 +23,9 @@ export function AccessLock({ type, onUnlock }: AccessLockProps) {
   const [shaking, setShaking] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  // Tracks whether the timer was actively counting down (diff > 0) before reaching zero.
+  // Prevents instant password jump on load when date has already passed.
+  const wasCountingRef = useRef(false)
 
   const isBirthday = type === 'birthday'
 
@@ -42,7 +45,15 @@ export function AccessLock({ type, onUnlock }: AccessLockProps) {
       const storageKey = isBirthday ? 'birthday_seal_broken' : 'anniversary_seal_broken'
       const saved = localStorage.getItem(storageKey)
       if (saved === 'true') {
-        setStep('countdown')
+        const target = getTargetDate()
+        const now = new Date()
+        if (now.getTime() >= target.getTime()) {
+          // Date has already passed — go straight to password, skip the countdown
+          setStep('password')
+        } else {
+          // Date hasn't arrived yet — show the countdown
+          setStep('countdown')
+        }
       }
     }
   }, [isBirthday])
@@ -55,10 +66,16 @@ export function AccessLock({ type, onUnlock }: AccessLockProps) {
       const diff = target.getTime() - now.getTime()
 
       if (diff <= 0) {
-        // Date has arrived — show password gate instead of unlocking directly
-        setStep((prev) => (prev === 'countdown' ? 'password' : prev))
+        // Only advance to password if the timer was actively counting down.
+        // This prevents jumping straight to password on initial load when
+        // the date has already passed (that case is handled in the mount effect).
+        if (wasCountingRef.current) {
+          setStep((prev) => (prev === 'countdown' ? 'password' : prev))
+          wasCountingRef.current = false
+        }
         setTime({ days: 0, hours: 0, minutes: 0, seconds: 0 })
       } else {
+        wasCountingRef.current = true
         const days = Math.floor(diff / (1000 * 60 * 60 * 24))
         const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
         const minutes = Math.floor((diff / (1000 * 60)) % 60)
