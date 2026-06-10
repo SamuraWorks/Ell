@@ -4,33 +4,34 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import birthdayData from '@/data/birthday.json'
+import { isBirthdayPasswordOk } from '@/lib/unlock'
+import { BirthdayLock } from '@/components/birthday-lock'
 
 export default function BirthdayLetterPage() {
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
+  const [isLocked, setIsLocked] = useState(true)
 
   useEffect(() => {
     setMounted(true)
     const checkLockStatus = () => {
-      const now = new Date()
-      const year = now.getFullYear()
-      const unlockDate = new Date(year, 5, 20, 0, 0, 0) // June 20, 12:00 AM
-      if (now.getTime() < unlockDate.getTime()) {
-        router.push('/birthday')
+      if (!isBirthdayPasswordOk()) {
+        setIsLocked(true)
+      } else {
+        setIsLocked(false)
       }
     }
     checkLockStatus()
-  }, [router])
+    const interval = setInterval(checkLockStatus, 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   const letter = birthdayData.letter
 
   if (!mounted) return null
 
-  const now = new Date()
-  const year = now.getFullYear()
-  const unlockDate = new Date(year, 5, 20, 0, 0, 0)
-  if (now.getTime() < unlockDate.getTime()) {
-    return null
+  if (isLocked) {
+    return <BirthdayLock onUnlock={() => setIsLocked(false)} />
   }
 
   return (

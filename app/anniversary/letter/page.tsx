@@ -4,33 +4,34 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import anniversaryData from '@/data/anniversary.json'
+import { isAnniversaryPasswordOk } from '@/lib/unlock'
+import { AnniversaryLock } from '@/components/anniversary-lock'
 
 export default function AnniversaryLetterPage() {
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
+  const [isLocked, setIsLocked] = useState(true)
 
   useEffect(() => {
     setMounted(true)
     const checkLockStatus = () => {
-      const now = new Date()
-      const year = now.getFullYear()
-      const unlockDate = new Date(year, 5, 24, 0, 0, 0)
-      if (now.getTime() < unlockDate.getTime()) {
-        router.push('/anniversary')
+      if (!isAnniversaryPasswordOk()) {
+        setIsLocked(true)
+      } else {
+        setIsLocked(false)
       }
     }
     checkLockStatus()
-  }, [router])
+    const interval = setInterval(checkLockStatus, 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   const letter = anniversaryData.letter
 
   if (!mounted) return null
 
-  const now = new Date()
-  const year = now.getFullYear()
-  const unlockDate = new Date(year, 5, 24, 0, 0, 0)
-  if (now.getTime() < unlockDate.getTime()) {
-    return null
+  if (isLocked) {
+    return <AnniversaryLock onUnlock={() => setIsLocked(false)} />
   }
 
   return (

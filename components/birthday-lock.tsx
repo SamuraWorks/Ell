@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { WaxSeal } from '@/components/wax-seal'
+import { checkPassword, saveBirthdayPassword, isBirthdayPasswordOk, DEV_MODE } from '@/lib/unlock'
 
 interface BirthdayLockProps {
   onUnlock: () => void
@@ -10,9 +11,16 @@ interface BirthdayLockProps {
 
 export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
   const [mounted, setMounted] = useState(false)
-  const [step, setStep] = useState<'seal' | 'countdown'>('seal')
+  const [step, setStep] = useState<'seal' | 'countdown' | 'password'>('seal')
   const [shouldCrack, setShouldCrack] = useState(false)
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+
+  // Password gate state
+  const [pwd, setPwd] = useState('')
+  const [showPwd, setShowPwd] = useState(false)
+  const [shake, setShake] = useState(false)
+  const [wrongAttempt, setWrongAttempt] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // Target: June 20, 12:00 AM of the current year
   const getTargetDate = () => {
@@ -22,13 +30,18 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
 
   useEffect(() => {
     setMounted(true)
+    // If password was already verified this session, skip straight to unlock
+    if (isBirthdayPasswordOk()) {
+      onUnlock()
+      return
+    }
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('birthday_seal_broken')
       if (saved === 'true') {
         setStep('countdown')
       }
     }
-  }, [])
+  }, [onUnlock])
 
   useEffect(() => {
     const target = getTargetDate()
@@ -37,8 +50,9 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
       const now = new Date()
       const diff = target.getTime() - now.getTime()
 
-      if (diff <= 0) {
-        onUnlock()
+      if (DEV_MODE || diff <= 0) {
+        // Timer done — show password gate instead of unlocking directly
+        setStep('password')
       } else {
         const days = Math.floor(diff / (1000 * 60 * 60 * 24))
         const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
@@ -51,16 +65,33 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
     updateTimer()
     const interval = setInterval(updateTimer, 1000)
     return () => clearInterval(interval)
-  }, [onUnlock])
+  }, [])
 
-  const handleBreakSeal = () => {
-    setShouldCrack(true)
-  }
+  useEffect(() => {
+    if (step === 'password') {
+      setTimeout(() => inputRef.current?.focus(), 400)
+    }
+  }, [step])
+
+  const handleBreakSeal = () => setShouldCrack(true)
 
   const handleCrackComplete = () => {
     setStep('countdown')
     if (typeof window !== 'undefined') {
       localStorage.setItem('birthday_seal_broken', 'true')
+    }
+  }
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (checkPassword(pwd)) {
+      saveBirthdayPassword()
+      onUnlock()
+    } else {
+      setShake(true)
+      setWrongAttempt(true)
+      setPwd('')
+      setTimeout(() => setShake(false), 600)
     }
   }
 
@@ -101,7 +132,9 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
       {/* Main card */}
       <div className="relative z-10 w-full max-w-xl">
         <AnimatePresence mode="wait">
-          {step === 'seal' ? (
+
+          {/* ── Step 1: Wax Seal ─────────────────────────────── */}
+          {step === 'seal' && (
             <motion.div
               key="seal-step"
               initial={{ opacity: 0, y: 20 }}
@@ -110,13 +143,11 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
               transition={{ duration: 0.8 }}
               className="flex flex-col items-center text-center space-y-8"
             >
-              {/* Emojis & Wax Seal */}
               <div className="flex flex-col items-center gap-6">
                 <span className="text-6xl animate-hero-pulse">🎂💌</span>
                 <WaxSeal pulse={!shouldCrack} shouldCrack={shouldCrack} onCrack={handleCrackComplete} size={110} />
               </div>
 
-              {/* Message */}
               <div className="space-y-4 max-w-md">
                 <p className="font-playfair text-[20px] sm:text-[22px] italic text-[#3D2C2C] leading-relaxed">
                   "Some surprises are too special to be opened early."
@@ -129,7 +160,6 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
                 </p>
               </div>
 
-              {/* Button */}
               <button
                 onClick={handleBreakSeal}
                 disabled={shouldCrack}
@@ -139,7 +169,10 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
                 <span>{shouldCrack ? 'Breaking Seal...' : 'Break The Seal'}</span>
               </button>
             </motion.div>
-          ) : (
+          )}
+
+          {/* ── Step 2: Countdown ────────────────────────────── */}
+          {step === 'countdown' && (
             <motion.div
               key="countdown-step"
               initial={{ opacity: 0, y: 20 }}
@@ -148,10 +181,8 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
               transition={{ duration: 0.8 }}
               className="flex flex-col items-center text-center space-y-10"
             >
-              {/* Emoji Header */}
               <span className="text-6xl animate-bounce" style={{ animationDuration: '3s' }}>⏳</span>
 
-              {/* Message */}
               <div className="space-y-3">
                 <h2 className="font-playfair text-[32px] text-[#3D2C2C] tracking-tight">Hang tight, Fay Fay❤️...</h2>
                 <p className="font-jost text-base text-[#6E5250] max-w-md mx-auto leading-relaxed">
@@ -161,7 +192,6 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
                 </p>
               </div>
 
-              {/* Live Countdown Timer Grid */}
               <div className="flex items-stretch justify-center gap-3 sm:gap-4">
                 {countdownUnits.map((u) => (
                   <div
@@ -178,7 +208,6 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
                 ))}
               </div>
 
-              {/* Footer Quote */}
               <div className="flex flex-col items-center gap-3 pt-4">
                 <span className="text-3xl">💖</span>
                 <p className="font-playfair italic text-[18px] text-[#C4687A]">
@@ -187,6 +216,103 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
               </div>
             </motion.div>
           )}
+
+          {/* ── Step 3: Password Gate ────────────────────────── */}
+          {step === 'password' && (
+            <motion.div
+              key="password-step"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.7 }}
+              className="flex flex-col items-center text-center space-y-8"
+            >
+              {/* Icon */}
+              <motion.div
+                animate={{ rotate: [0, -5, 5, -5, 5, 0] }}
+                transition={{ duration: 0.6, repeat: Infinity, repeatDelay: 3 }}
+              >
+                <span className="text-6xl">🔐</span>
+              </motion.div>
+
+              {/* Heading */}
+              <div className="space-y-3 max-w-sm">
+                <h2 className="font-playfair text-[30px] sm:text-[36px] text-[#3D2C2C]">
+                  The time has come.
+                </h2>
+                <p className="font-jost text-sm text-[#8B6E6E] uppercase tracking-widest">
+                  This space is private — enter the password to continue.
+                </p>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handlePasswordSubmit} className="w-full max-w-xs space-y-4">
+                <motion.div
+                  animate={shake ? { x: [-10, 10, -8, 8, -4, 4, 0] } : {}}
+                  transition={{ duration: 0.4 }}
+                  className="relative"
+                >
+                  <input
+                    ref={inputRef}
+                    id="birthday-password"
+                    type={showPwd ? 'text' : 'password'}
+                    value={pwd}
+                    onChange={(e) => { setPwd(e.target.value); setWrongAttempt(false) }}
+                    placeholder="Enter password"
+                    autoComplete="current-password"
+                    className={`w-full rounded-2xl border-2 bg-white/80 px-5 py-4 pr-12 font-jost text-base text-[#3D2C2C] placeholder-[#C4A0A0] backdrop-blur-sm outline-none transition-all
+                      ${wrongAttempt
+                        ? 'border-red-400 focus:border-red-500'
+                        : 'border-[#C4687A]/30 focus:border-[#C4687A]'
+                      }`}
+                  />
+                  {/* Show / hide toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setShowPwd(v => !v)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#C4687A]/60 hover:text-[#C4687A] transition-colors"
+                    tabIndex={-1}
+                    aria-label={showPwd ? 'Hide password' : 'Show password'}
+                  >
+                    {showPwd ? (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M17.94 17.94A10.07 10.07 0 0112 20C7 20 2.73 16.11 1 12a10.07 10.07 0 012.06-3.94"/>
+                        <path d="M9.9 4.24A9.12 9.12 0 0112 4c5 0 9.27 3.89 11 8a10.39 10.39 0 01-1.68 2.83"/>
+                        <line x1="1" y1="1" x2="23" y2="23"/>
+                      </svg>
+                    ) : (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                    )}
+                  </button>
+                </motion.div>
+
+                {wrongAttempt && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="font-jost text-xs text-red-400 tracking-wide"
+                  >
+                    That's not quite right. Try again 💌
+                  </motion.p>
+                )}
+
+                <button
+                  type="submit"
+                  className="w-full rounded-full bg-[#C4687A] px-8 py-4 font-jost text-sm uppercase tracking-widest text-white shadow-[0_8px_30px_rgba(196,104,122,0.35)] transition-all hover:bg-[#B05A6C] hover:shadow-[0_12px_40px_rgba(196,104,122,0.45)] active:scale-95"
+                >
+                  Enter ✨
+                </button>
+              </form>
+
+              <p className="font-dancing text-[24px] text-[#C4687A] opacity-80">
+                Only for you.
+              </p>
+            </motion.div>
+          )}
+
         </AnimatePresence>
       </div>
     </div>

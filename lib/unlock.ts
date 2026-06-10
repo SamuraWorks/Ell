@@ -6,6 +6,37 @@
 // Set this to false to re-enable date-based locking after content upload + testing.
 export const DEV_MODE = true
 
+// ─── Password gate ────────────────────────────────────────────────────────────
+// Single password for both sections. Stored in sessionStorage so it persists
+// across page navigations in the same tab but is cleared when the tab closes.
+const PRIVATE_PASSWORD = '7024ellA'
+const BIRTHDAY_PWD_KEY = 'birthday_pwd_ok'
+const ANNIVERSARY_PWD_KEY = 'anniversary_pwd_ok'
+
+export function checkPassword(input: string): boolean {
+  return input === PRIVATE_PASSWORD
+}
+
+export function isBirthdayPasswordOk(): boolean {
+  if (typeof window === 'undefined') return false
+  return sessionStorage.getItem(BIRTHDAY_PWD_KEY) === 'true'
+}
+
+export function saveBirthdayPassword(): void {
+  if (typeof window === 'undefined') return
+  sessionStorage.setItem(BIRTHDAY_PWD_KEY, 'true')
+}
+
+export function isAnniversaryPasswordOk(): boolean {
+  if (typeof window === 'undefined') return false
+  return sessionStorage.getItem(ANNIVERSARY_PWD_KEY) === 'true'
+}
+
+export function saveAnniversaryPassword(): void {
+  if (typeof window === 'undefined') return
+  sessionStorage.setItem(ANNIVERSARY_PWD_KEY, 'true')
+}
+
 const YEAR = new Date().getFullYear()
 
 // Month is 0-indexed: 5 = June

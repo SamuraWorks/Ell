@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { isAnniversaryUnlocked } from '@/lib/unlock'
-import { LockedScreen } from '@/components/locked-screen'
+import { isAnniversaryUnlocked, isAnniversaryPasswordOk } from '@/lib/unlock'
 import { FadeIn } from '@/components/fade-in'
 import { Section } from '@/components/section'
 import { PhotoGallery } from '@/components/photo-gallery'
@@ -18,14 +17,7 @@ export default function Us2YearsPage() {
   useEffect(() => {
     setMounted(true)
     const checkLockStatus = () => {
-      const now = new Date()
-      const year = now.getFullYear()
-      const unlockDate = new Date(year, 5, 24, 0, 0, 0) // June 24, 12:00 AM (Month 5 is June)
-      if (now.getTime() >= unlockDate.getTime()) {
-        setIsLocked(false)
-      } else {
-        setIsLocked(true)
-      }
+      setIsLocked(!isAnniversaryPasswordOk())
     }
     checkLockStatus()
     const interval = setInterval(checkLockStatus, 1000)

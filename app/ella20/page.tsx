@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { isBirthdayUnlocked, isAnniversaryUnlocked } from '@/lib/unlock'
-import { LockedScreen } from '@/components/locked-screen'
+import { isAnniversaryUnlocked, isBirthdayPasswordOk } from '@/lib/unlock'
+import { BirthdayLock } from '@/components/birthday-lock'
 import { FadeIn } from '@/components/fade-in'
 import { Section } from '@/components/section'
 import { PhotoGallery } from '@/components/photo-gallery'
@@ -21,8 +21,13 @@ export default function Ella20Page() {
   const [anniversaryOpen, setAnniversaryOpen] = useState(false)
 
   useEffect(() => {
-    setState(isBirthdayUnlocked() ? 'open' : 'locked')
-    setAnniversaryOpen(isAnniversaryUnlocked())
+    const checkLockStatus = () => {
+      setState(isBirthdayPasswordOk() ? 'open' : 'locked')
+      setAnniversaryOpen(isAnniversaryUnlocked())
+    }
+    checkLockStatus()
+    const interval = setInterval(checkLockStatus, 1000)
+    return () => clearInterval(interval)
   }, [])
 
   if (state === 'loading') {
@@ -30,12 +35,7 @@ export default function Ella20Page() {
   }
 
   if (state === 'locked') {
-    return (
-      <LockedScreen
-        title="Ella @ 20"
-        unlockLabel="This experience unlocks on June 20. Almost time."
-      />
-    )
+    return <BirthdayLock onUnlock={() => setState('open')} />
   }
 
   return (

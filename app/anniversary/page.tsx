@@ -10,7 +10,7 @@ import { AnniversaryGallery } from '@/components/anniversary-gallery'
 import { AnniversaryLock } from '@/components/anniversary-lock'
 import anniversaryData from '@/data/anniversary.json'
 import galleryData from '@/data/gallery.json'
-import { isAnniversaryUnlocked } from '@/lib/unlock'
+import { isAnniversaryUnlocked, isAnniversaryPasswordOk } from '@/lib/unlock'
 import { validateSections } from '@/lib/content-schema'
 import type { ContentSection } from '@/lib/content-schema'
 import { useRouter } from 'next/navigation'
@@ -25,14 +25,7 @@ export default function AnniversaryExperience() {
     window.scrollTo(0, 0)
 
     const checkLockStatus = () => {
-      const now = new Date()
-      const year = now.getFullYear()
-      const unlockDate = new Date(year, 5, 24, 0, 0, 0) // June 24, 12:00 AM (Month 5 is June)
-      if (now.getTime() >= unlockDate.getTime()) {
-        setIsLocked(false)
-      } else {
-        setIsLocked(true)
-      }
+      setIsLocked(!isAnniversaryPasswordOk())
     }
 
     checkLockStatus()

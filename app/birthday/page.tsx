@@ -21,7 +21,7 @@ import birthdayData from '@/data/birthday.json'
 import ellaData from '@/data/ella.json'
 import galleryData from '@/data/gallery.json'
 import messagesData from '@/data/messages.json'
-import { isAnniversaryUnlocked } from '@/lib/unlock'
+import { isAnniversaryUnlocked, isBirthdayPasswordOk } from '@/lib/unlock'
 import { validateSections } from '@/lib/content-schema'
 import type { ContentSection } from '@/lib/content-schema'
 import { useRouter } from 'next/navigation'
@@ -38,14 +38,7 @@ export default function BirthdayExperience() {
     window.scrollTo(0, 0)
 
     const checkLockStatus = () => {
-      const now = new Date()
-      const year = now.getFullYear()
-      const unlockDate = new Date(year, 5, 20, 0, 0, 0) // June 20, 12:00 AM (Month 5 is June)
-      if (now.getTime() >= unlockDate.getTime()) {
-        setIsLocked(false)
-      } else {
-        setIsLocked(true)
-      }
+      setIsLocked(!isBirthdayPasswordOk())
     }
 
     checkLockStatus()
