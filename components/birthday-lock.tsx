@@ -51,8 +51,8 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
       const diff = target.getTime() - now.getTime()
 
       if (DEV_MODE || diff <= 0) {
-        // Timer done — show password gate instead of unlocking directly
-        setStep('password')
+        // Timer done — only advance to password if already on countdown step
+        setStep((current) => (current === 'countdown' ? 'password' : current))
       } else {
         const days = Math.floor(diff / (1000 * 60 * 60 * 24))
         const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
