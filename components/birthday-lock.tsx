@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { WaxSeal } from '@/components/wax-seal'
-import { checkPassword, saveBirthdayPassword, isBirthdayPasswordOk, getBirthdayTarget } from '@/lib/unlock'
+import { checkPassword, saveBirthdayPassword, isBirthdayPasswordOk } from '@/lib/unlock'
 
 interface BirthdayLockProps {
   onUnlock: () => void
@@ -11,12 +11,9 @@ interface BirthdayLockProps {
 
 export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
   const [mounted, setMounted] = useState(false)
-  // Strict flow: seal → countdown → password
-  // 'countdown' is always shown after seal-break — no shortcuts to 'password'
-  const [step, setStep] = useState<'seal' | 'countdown' | 'password'>('seal')
+  // Direct flow: seal → password
+  const [step, setStep] = useState<'seal' | 'password'>('seal')
   const [shouldCrack, setShouldCrack] = useState(false)
-  const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-  const [countdownDone, setCountdownDone] = useState(false)
 
   // Password gate state
   const [pwd, setPwd] = useState('')
@@ -35,44 +32,14 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
       return
     }
 
-    // If the seal was already broken in a previous visit, restore the countdown step.
-    // We NEVER skip directly to 'password' from localStorage — the countdown must run.
+    // If the seal was already broken in a previous visit, restore the password step.
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('birthday_seal_broken')
       if (saved === 'true') {
-        setStep('countdown')
+        setStep('password')
       }
     }
   }, [onUnlock])
-
-  useEffect(() => {
-    // getBirthdayTarget() always returns the next upcoming June 20, rolling to next
-    // year if this year's date has already passed — so the timer is never instantly 0.
-    const target = getBirthdayTarget()
-
-    const updateTimer = () => {
-      const now = new Date()
-      const diff = target.getTime() - now.getTime()
-
-      if (diff <= 0) {
-        setTime({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-        setCountdownDone(true)
-        // Advance to password step once the timer actually reaches zero
-        setStep((current) => (current === 'countdown' ? 'password' : current))
-      } else {
-        setCountdownDone(false)
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
-        const minutes = Math.floor((diff / (1000 * 60)) % 60)
-        const seconds = Math.floor((diff / 1000) % 60)
-        setTime({ days, hours, minutes, seconds })
-      }
-    }
-
-    updateTimer()
-    const interval = setInterval(updateTimer, 1000)
-    return () => clearInterval(interval)
-  }, [])
 
   useEffect(() => {
     if (step === 'password') {
@@ -83,8 +50,8 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
   const handleBreakSeal = () => setShouldCrack(true)
 
   const handleCrackComplete = () => {
-    // Always go to countdown after seal — never jump to password directly
-    setStep('countdown')
+    // Go directly to password after seal is broken
+    setStep('password')
     if (typeof window !== 'undefined') {
       localStorage.setItem('birthday_seal_broken', 'true')
     }
@@ -104,15 +71,6 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
   }
 
   if (!mounted) return null
-
-  const pad = (n: number) => n.toString().padStart(2, '0')
-
-  const countdownUnits = [
-    { label: 'Days', value: time.days },
-    { label: 'Hours', value: time.hours },
-    { label: 'Minutes', value: time.minutes },
-    { label: 'Seconds', value: time.seconds },
-  ]
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#FFF0F2] via-[#FFF8F8] to-[#FFEDF0] px-6 py-24">
@@ -179,55 +137,7 @@ export function BirthdayLock({ onUnlock }: BirthdayLockProps) {
             </motion.div>
           )}
 
-          {/* ── Step 2: Countdown (must complete before password unlocks) ── */}
-          {step === 'countdown' && (
-            <motion.div
-              key="countdown-step"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.8 }}
-              className="flex flex-col items-center text-center space-y-10"
-            >
-              <span className="text-6xl animate-bounce" style={{ animationDuration: '3s' }}>⏳</span>
-
-              <div className="space-y-3">
-                <h2 className="font-playfair text-[32px] text-[#3D2C2C] tracking-tight">Hang tight, Fay Fay❤️...</h2>
-                <p className="font-jost text-base text-[#6E5250] max-w-md mx-auto leading-relaxed">
-                  A birthday surprise is waiting quietly behind the curtain.
-                  <br />
-                  Every second brings you closer.
-                </p>
-              </div>
-
-              <div className="flex items-stretch justify-center gap-3 sm:gap-4">
-                {countdownUnits.map((u) => (
-                  <div
-                    key={u.label}
-                    className="flex min-w-[70px] flex-col items-center rounded-2xl border border-[#C4687A]/20 bg-white/80 px-3 py-4 shadow-[0_8px_30px_rgba(196,104,122,0.06)] backdrop-blur-sm sm:min-w-[85px]"
-                  >
-                    <span className="font-heading text-3xl font-semibold tabular-nums text-[#3D2C2C] sm:text-4xl">
-                      {pad(u.value)}
-                    </span>
-                    <span className="mt-1 text-[9px] uppercase tracking-[0.2em] text-[#8B6E6E]">
-                      {u.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-col items-center gap-3 pt-4">
-                <span className="text-3xl">💖</span>
-                <p className="font-playfair italic text-[18px] text-[#C4687A]">
-                  "The wait is part of the gift."
-                </p>
-              </div>
-
-              {/* No shortcut button — password is only accessible after the timer hits zero */}
-            </motion.div>
-          )}
-
-          {/* ── Step 3: Password Gate (only reachable after countdown finishes) ── */}
+          {/* ── Step 2: Password Gate ────────────────────────── */}
           {step === 'password' && (
             <motion.div
               key="password-step"

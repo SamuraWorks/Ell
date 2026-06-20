@@ -62,8 +62,7 @@ export function getAnniversaryTarget(now: Date = new Date()): Date {
 }
 
 export function isBirthdayUnlocked(now: Date = new Date()): boolean {
-  if (DEV_MODE) return true
-  return now.getMonth() > 5 || (now.getMonth() === 5 && now.getDate() >= 20)
+  return true
 }
 
 export function isAnniversaryUnlocked(now: Date = new Date()): boolean {
